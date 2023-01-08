@@ -1,0 +1,4 @@
+POST http://localhost:8080/subscriptions
+Content-Type: application/x-www-form-urlencoded
+
+email=little.pen7459@fastmail.com&name=Tyler Schmidtke

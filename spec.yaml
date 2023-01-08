@@ -1,0 +1,18 @@
+#! spec.yaml
+name: zero2prod
+region: nyc3
+services:
+  - name: zero2prod
+    dockerfile_path: Dockerfile
+    source_dir: .
+    github:
+      branch: main
+      deploy_on_push: true
+      repo: TylerSchmidtke/zero2prod
+    health_check:
+      http_path: /health
+    http_port: 8080
+    instance_count: 1
+    instance_size_slug: basic-xxs
+    routes:
+      - path: /

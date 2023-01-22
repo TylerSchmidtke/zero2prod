@@ -17,6 +17,9 @@ services:
     routes:
       - path: /
     envs:
+      - key: APP_APPLICATION__BASE_URL
+        scope: RUN_TIME
+        value: ${APP_URL}
       - key: APP_DATABASE__USERNAME
         scope: RUN_TIME
         value: ${newsletter.USERNAME}
@@ -32,6 +35,7 @@ services:
       - key: APP_DATABASE__DATABASE_NAME
         scope: RUN_TIME
         value: ${newsletter.DATABASE}
+
 databases:
   - engine: PG
     name: newsletter

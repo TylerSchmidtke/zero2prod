@@ -16,3 +16,8 @@ services:
       - "5432:5432"
     volumes:
       - ./scripts/db:/docker-entrypoint-initdb.d/:ro
+  redis:
+    image: redis
+    restart: always
+    ports:
+      - "6379:6379"

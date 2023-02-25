@@ -1,5 +1,6 @@
 application:
   port: 8080
+  hmac_secret: thisIsSomeReallyLongThingyThatImUsingLocally-okay-dudes-is-this-fine-f
 database:
   host: "127.0.0.1"
   port: 5432
@@ -7,7 +8,8 @@ database:
   password: "password"
   database_name: "newsletter"
 email_client:
-  base_url: "http://localhost"
-  sender_email: "tyler@schmidtke.dev"
-  authorization_token: 1a2b9af8-784e-4a2f-8718-10662c4912b6
+  base_url: "https://api.postmarkapp.com"
+  sender_email: ""
+  authorization_token:  ""
   timeout_milliseconds: 10000
+redis_uri: "redis://127.0.0.1:6379"

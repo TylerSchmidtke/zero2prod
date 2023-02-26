@@ -147,9 +147,13 @@ async fn newsletter_creation_is_idempotent() {
         "idempotency_key": Uuid::new_v4().to_string(),
     });
 
-    let response = app.post_newsletters(newsletter_request_body).await;
+    let response = app.post_newsletters(newsletter_request_body.clone()).await;
     assert_is_redirect_to(&response, "/admin/dashboard");
 
     let html_page = app.get_admin_dashboard_html().await;
     assert!(html_page.contains("<p><i>The newsletter issue has been published!</i></p>"));
+
+    // submit the same newsletter again
+    let response = app.post_newsletters(newsletter_request_body.clone()).await;
+    assert_is_redirect_to(&response, "/admin/dashboard");
 }

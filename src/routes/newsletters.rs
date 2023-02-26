@@ -2,10 +2,12 @@ use crate::domain::SubscriberEmail;
 use crate::email_client::EmailClient;
 use crate::routes::error_chain_fmt;
 use crate::session_state::TypedSession;
+use crate::utils::see_other;
 use actix_web::body::BoxBody;
 use actix_web::http::header::HeaderValue;
 use actix_web::http::StatusCode;
 use actix_web::{web, HttpResponse, ResponseError};
+use actix_web_flash_messages::FlashMessage;
 use anyhow::Context;
 use reqwest::header;
 use sqlx::PgPool;
@@ -99,7 +101,8 @@ pub async fn publish_newsletter(
         }
     }
 
-    Ok(HttpResponse::Ok().finish())
+    FlashMessage::info("<p><i>The newsletter issue has been published!</i></p>").send();
+    Ok(see_other("/admin/dashboard"))
 }
 
 #[tracing::instrument(name = "Get confirmed subscribers", skip(pool))]

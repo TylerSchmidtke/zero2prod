@@ -5,8 +5,8 @@ use actix_web::{web, HttpResponse};
 use actix_web_flash_messages::IncomingFlashMessages;
 use anyhow::Context;
 use sqlx::PgPool;
-use uuid::Uuid;
 use std::fmt::Write;
+use uuid::Uuid;
 
 pub async fn admin_dashboard(
     pool: web::Data<PgPool>,
@@ -17,9 +17,10 @@ pub async fn admin_dashboard(
     let username = get_username(*user_id, &pool).await.map_err(e500)?;
     let mut msg_html = String::new();
     for m in flash_messages.iter() {
-        writeln!(msg_html, "<p>{}</p>", m.content()).unwrap();
+        writeln!(msg_html, "<p><i>{}</i></p>", m.content()).unwrap();
     }
 
+    let idempotency_key = Uuid::new_v4();
     Ok(HttpResponse::Ok()
         .content_type(ContentType::html())
         .body(format!(
@@ -45,6 +46,7 @@ pub async fn admin_dashboard(
             <input type="text" name="title" placeholder="Subject">
             <input type="textarea" name="content_text" placeholder="Content">
             <input type="textarea" name="content_html" placeholder="Content (HTML)">
+            <input hidden type="text" name="idempotency_key" value="{idempotency_key}">
             <input type="submit" value="Send newsletter">
         </form>
     </ol>

@@ -1,0 +1,15 @@
+application:
+  port: 8080
+  hmac_secret: ""
+database:
+  host: "127.0.0.1"
+  port: 5432
+  username: ""
+  password: ""
+  database_name: "newsletter"
+email_client:
+  base_url: "https://api.postmarkapp.com"
+  sender_email: ""
+  authorization_token: ""
+  timeout_milliseconds: 10000
+redis_uri: "redis://127.0.0.1:6379"

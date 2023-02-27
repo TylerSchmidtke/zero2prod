@@ -2,6 +2,7 @@ mod create_user;
 mod dashboard;
 mod logout;
 mod password;
+pub mod newsletters;
 
 pub use create_user::create_user_form;
 pub use create_user::create_user_handler;

@@ -6,6 +6,8 @@ use sqlx::{Connection, Executor, PgConnection, PgPool};
 use uuid::Uuid;
 use wiremock::MockServer;
 use zero2prod::configuration::{get_configuration, DatabaseSettings};
+use zero2prod::email_client::EmailClient;
+use zero2prod::issue_delivery_worker::{try_execute_task, ExecutionOutcome};
 use zero2prod::startup::Application;
 use zero2prod::telemetry::{get_subscriber, init_subscriber};
 
@@ -38,9 +40,21 @@ pub struct TestApp {
     pub email_server: MockServer,
     pub api_client: reqwest::Client,
     pub(crate) test_user: TestUser,
+    pub email_client: EmailClient,
 }
 
 impl TestApp {
+    pub async fn dispatch_all_pending_emails(&self) {
+        loop {
+            if let ExecutionOutcome::EmptyQueue =
+                try_execute_task(&self.db_pool, &self.email_client)
+                    .await
+                    .unwrap()
+            {
+                break;
+            }
+        }
+    }
     pub async fn post_subscriptions(&self, body: String) -> reqwest::Response {
         self.api_client
             .post(&format!("{}/subscriptions", &self.address))
@@ -74,7 +88,7 @@ impl TestApp {
         ConfirmationLinks { html, plain_text }
     }
 
-    pub async fn post_newsletters(&self, body: serde_json::Value) -> reqwest::Response {
+    pub async fn post_newsletters(&self, body: &serde_json::Value) -> reqwest::Response {
         self.api_client
             .post(&format!("{}/admin/newsletters", &self.address))
             .basic_auth(&self.test_user.username, Some(&self.test_user.password))
@@ -221,6 +235,7 @@ pub async fn spawn_app() -> TestApp {
         test_user: TestUser::generate(),
         api_client: client,
         email_server,
+        email_client: configuration.email_client.client(),
     };
     test_app.test_user.store(&test_app.db_pool).await;
     test_app
